@@ -1,7 +1,6 @@
 ﻿Imports System.ComponentModel
 Imports System.IO
 Imports System.Web.Script.Serialization
-Imports Ookii.Dialogs
 Public Class Form1
     Private Const V As String = "• TFEOffline"
     Dim RawXMLData As String
@@ -10,9 +9,10 @@ Public Class Form1
     Dim IsLocked As Boolean
     Dim TempStatus As String
 #Disable Warning IDE0044 ' STOP BUGGING ME UGH
-    Public CurrentEvent As New TFEEvent
+    Public CurrentEvent As New TFEEvent 'main variable we'll be working with
 #Enable Warning IDE0044
     Public Class TFEEvent
+        'class for the whole event
         Public Title As String
         Public Period As String
         Public City As String
@@ -22,10 +22,12 @@ Public Class Form1
         Public Tickets As New List(Of TFETicket)
     End Class
     Public Class TFETicketType
+        'class for ticket types, used only once when generating CurrentEvent 
         Public ID As String
         Public Name As String
     End Class
     Public Class TFETicket
+        'class for the ticket itself
         Public ID As String
         Public FirstName As String
         Public LastName As String
@@ -78,6 +80,7 @@ Public Class Form1
                     If Tickets.Element("activity") = "ENTERED" Then NewTicket.Used = True
                     CurrentEvent.Tickets.Add(NewTicket)
                 Next
+                'prepare window for working with tickets
                 EventTitleLbl.Text = CurrentEvent.Title
                 EventLocationLbl.Text = CurrentEvent.City & ", " & CurrentEvent.Address & ", " & CurrentEvent.Period
                 StatusLbl.Text = "Отсканируйте билет..."
@@ -86,33 +89,16 @@ Public Class Form1
                 Me.Text = "• TFEOffline"
                 GenerateLog("Загружено " & CurrentEvent.TotalTicketsSold & " билетов")
             Catch ex As Exception
+                'just in case wrong xml was given
                 MessageBox.Show("Файл не может быть открыт. Причина: " & ex.Message, "Извините!", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             End Try
         End If
     End Sub
 
-    Private Sub Form1_Load(sender As Object, e As EventArgs) Handles Me.Load
-        '    Dim TD As New Ookii.Dialogs.TaskDialog
-        '    Dim Not_ready As New TaskDialogButton("Остаться в мнимом комфорте")
-        '    Dim Ready As New TaskDialogButton("Я готов")
-        '    With TD
-        '    .WindowTitle = "Внимание!"
-        '   .MainInstruction = "Сейчас вы можете изменить дальнейшее развитие событий."
-        '   r .Content = "Вас ожидает неизвестность, обещающая большее количество денег и карьерное движение. Однако, возможно, вы будете поражены синдромом самозванца, а в худшем - будете обмануты." & vbCrLf & "Вы готовы начать новый путь?"
-        '    .MainIcon = TaskDialogIcon.Information
-        '
-        '   .Buttons.Add(Ready)
-        '
-        '   .Buttons.Add(Not_ready)
-        '   End With
-        '   Dim result As TaskDialogButton = TD.ShowDialog()
-
-    End Sub
-
-
     Private Sub TicketIDTxt_KeyDown(sender As Object, e As KeyEventArgs) Handles TicketIDTxt.KeyDown
         If e.KeyCode = Keys.Enter Then
             If IsLocked = True Then
+                'password is 4154866 for testing purposes
                 If TicketIDTxt.Text = "4154866" Then
                     Unlock()
                     GenerateLog("Разблокировано")
@@ -130,15 +116,17 @@ Public Class Form1
             End If
             For Each i In CurrentEvent.Tickets
                 If i.ID = TicketIDTxt.Text Then
-                    'билет найден
+                    'ticket found
                     NameSurnameLbl.Text = i.FirstName & " " & i.LastName
                     TicketTypeLbl.Text = i.Type
                     If i.Used = True Then
+                        'ticket already used
                         StatusLbl.Text = "Билет уже использован!"
                         GenerateLog(TicketIDTxt.Text & " " & NameSurnameLbl.Text & " " & "уже зашел, был отсканирован снова")
                         ChangeStatusRed()
                         Exit Sub
                     Else
+                        'ticket is fresh
                         i.Used = True
                         i.TimeActivated = DateToStirng()
                         My.Computer.Audio.Play(My.Resources.Right, AudioPlayMode.Background)
@@ -148,6 +136,7 @@ Public Class Form1
                     End If
                 End If
             Next
+            'ticket not found
             NameSurnameLbl.Text = TicketIDTxt.Text
             GenerateLog(TicketIDTxt.Text & " " & "не найден")
             StatusLbl.Text = "Билет не найден!"
@@ -215,6 +204,7 @@ Public Class Form1
                 file.Close()
             End If
             My.Computer.FileSystem.WriteAllText(FileSaver.FileName, String.Join(vbCrLf, Everything.ToArray()), False)
+            'done with saving
             IsSaved = True
             Me.Text = "TFEOffline"
         End If
@@ -222,6 +212,7 @@ Public Class Form1
 
     Private Sub Form1_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
         If IsLocked = True Then
+            'if locked, we won't allow for the app to close
             MessageBox.Show("Приложение нельзя закрыть, пока оно заблокировано.", "Извините!", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             e.Cancel = True
             Exit Sub
@@ -229,9 +220,10 @@ Public Class Form1
         If IsSaved = False Then
             Dim result As DialogResult = MessageBox.Show("Сохранить результаты в файл?", "TFEOffline", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question)
             If result = DialogResult.Cancel Then
+                'getting back
                 e.Cancel = True
             ElseIf result = DialogResult.No Then
-                'do nothing
+                'let it close
             ElseIf result = DialogResult.Yes Then
                 Dim FileSaver As New SaveFileDialog
                 With FileSaver
@@ -242,6 +234,7 @@ Public Class Form1
                 End With
                 If FileSaver.ShowDialog = DialogResult.OK Then
                     'make csv file
+                    'this was supposed to be a sub
                     Dim Everything As New List(Of String)
                     Dim Description As String = CurrentEvent.Title & "; " & CurrentEvent.Period & "; " & CurrentEvent.City & " " & CurrentEvent.Address & "; продано билетов " & CurrentEvent.TotalTicketsSold
                     Everything.Add(Description)
@@ -281,9 +274,11 @@ Public Class Form1
         Dim logstring As String
         logstring = DateToStirng() & ", " & e
         LogLbl.Text = logstring
+        'to do - write log in a file
     End Sub
 
     Private Sub Lock()
+        'basically just the gui parts 
         IsLocked = True
         OpenBtn.Visible = False
         TicketsListBtn.Visible = False
@@ -301,6 +296,7 @@ Public Class Form1
     End Sub
 
     Private Sub Unlock()
+        'same with the gui parts
         IsLocked = False
         OpenBtn.Visible = True
         TicketsListBtn.Visible = True

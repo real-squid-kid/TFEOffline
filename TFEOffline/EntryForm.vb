@@ -19,9 +19,15 @@ Public Class EntryForm
             TimeEnteredLbl.Visible = False
         End If
         'generate qr code
-        Dim QREncoder As New QRCodeEncoder()
-        Dim QRCode As Bitmap = QREncoder.Encode(CurrentEntry.ID)
-        QRPBox.Image = QRCode
+        'library is too chunky so we leave the opportunity to not to include it
+        Try
+            Dim QREncoder As New QRCodeEncoder()
+            Dim QRCode As Bitmap = QREncoder.Encode(CurrentEntry.ID)
+            QRPBox.Image = QRCode
+        Catch ex As Exception
+            MessageBox.Show("Не удалось сгенерировать QR-код из-за отсутствия библиотеки MessagingToolkit.QRCode.", "Извините!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+        End Try
+
     End Sub
 
     Private Sub EnteredNowBtn_Click(sender As Object, e As EventArgs) Handles EnteredNowBtn.Click

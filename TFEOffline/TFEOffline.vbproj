@@ -71,9 +71,6 @@
     <Reference Include="MessagingToolkit.QRCode">
       <HintPath>Resources\MessagingToolkit.QRCode.dll</HintPath>
     </Reference>
-    <Reference Include="Ookii.Dialogs">
-      <HintPath>..\..\..\..\Desktop\temp\New folder\Ookii.Dialogs.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />

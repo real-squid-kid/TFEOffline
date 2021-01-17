@@ -10,11 +10,14 @@
     End Sub
 
     Public Sub Fresh()
+        'full refresh
+        'first we clean up everything
         AllEntries.Clear()
         EntriesLst.Items.Clear()
         TotalTickets = 0
         Entered = 0
         Waiting = 0
+        'retrieving tickets list
         For Each a As Form1.TFETicket In Form1.CurrentEvent.Tickets
             TotalTickets += 1
             Dim NewString As String
@@ -30,6 +33,7 @@
             EntriesLst.Items.Add(NewString)
             AllEntries.Add(NewString)
         Next
+        'showing digits now
         TotalLbl.Text = TotalTickets
         Dim Percentage As Single
         Percentage = Int(Entered / TotalTickets * 100)
@@ -38,8 +42,10 @@
     End Sub
 
     Private Sub SearchTxt_TextChanged(sender As Object, e As EventArgs) Handles SearchTxt.TextChanged
+        'we won't do stuff if only one character entered
         If SearchTxt.TextLength > 1 Then
             EntriesLst.Items.Clear()
+            'searching in list
             Dim FoundEntries As New List(Of String)
             For Each a As String In AllEntries
                 If a.Contains(SearchTxt.Text) Then
@@ -54,6 +60,7 @@
                 EntriesLst.Items.Add("Ничего не найдено.")
             End If
         End If
+        'if nothing is in search field, then we'll display everything
         If SearchTxt.TextLength = 0 Then
             EntriesLst.Items.Clear()
             For Each a In AllEntries
@@ -66,6 +73,7 @@
         Dim Selected As String = EntriesLst.Items(EntriesLst.SelectedIndex)
         'trim to get the id
         Dim SelectedID As String = Selected.Substring(4, 16)
+        'search for the needed ticket and show it
         For Each i As Form1.TFETicket In Form1.CurrentEvent.Tickets
             If i.ID = SelectedID Then
                 CurrentEntry = i
