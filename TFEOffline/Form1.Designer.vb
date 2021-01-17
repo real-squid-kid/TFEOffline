@@ -23,6 +23,7 @@ Partial Class Form1
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Form1))
         Me.OpenBtn = New System.Windows.Forms.Button()
         Me.EntryStatusLbl = New System.Windows.Forms.Label()
         Me.SaveBtn = New System.Windows.Forms.Button()
@@ -212,6 +213,7 @@ Partial Class Form1
         Me.Controls.Add(Me.TicketsListBtn)
         Me.Controls.Add(Me.OpenBtn)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle
+        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Margin = New System.Windows.Forms.Padding(2)
         Me.MaximizeBox = False
         Me.Name = "Form1"
