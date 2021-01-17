@@ -7,6 +7,8 @@ Public Class Form1
     Dim RawXMLData As String
     Dim MainDictionary As XElement
     Dim IsSaved As Boolean
+    Dim IsLocked As Boolean
+    Dim TempStatus As String
 #Disable Warning IDE0044 ' STOP BUGGING ME UGH
     Public CurrentEvent As New TFEEvent
 #Enable Warning IDE0044
@@ -110,6 +112,22 @@ Public Class Form1
 
     Private Sub TicketIDTxt_KeyDown(sender As Object, e As KeyEventArgs) Handles TicketIDTxt.KeyDown
         If e.KeyCode = Keys.Enter Then
+            If IsLocked = True Then
+                If TicketIDTxt.Text = "4154866" Then
+                    Unlock()
+                    GenerateLog("Разблокировано")
+                    TicketIDTxt.Text = ""
+                    TicketIDTxt.Focus()
+                    Exit Sub
+                Else
+                    StatusLbl.Text = "Неверный пароль!"
+                    GenerateLog("Неверно введен пароль = " & TicketIDTxt.Text)
+                    My.Computer.Audio.Play(My.Resources.siren, AudioPlayMode.Background)
+                    TicketIDTxt.SelectAll()
+                    TicketIDTxt.Focus()
+                    Exit Sub
+                End If
+            End If
             For Each i In CurrentEvent.Tickets
                 If i.ID = TicketIDTxt.Text Then
                     'билет найден
@@ -150,7 +168,7 @@ Public Class Form1
     Public Sub ChangeStatusRed()
         EntryStatusLbl.BackColor = Color.Red
         EntryStatusLbl.Text = "❌"
-        My.Computer.Audio.Play(My.Resources.turniket_new, AudioPlayMode.Background)
+        My.Computer.Audio.Play(My.Resources.siren, AudioPlayMode.Background)
         Changeback.Enabled = True
     End Sub
     Public Sub ChangeStatusGreen()
@@ -171,7 +189,7 @@ Public Class Form1
         ListForm.ShowDialog()
     End Sub
 
-    Private Sub SaveBtn_Click(sender As Object, e As EventArgs) Handles SaveBtn.Click, WriteLogBtn.Click
+    Private Sub SaveBtn_Click(sender As Object, e As EventArgs) Handles SaveBtn.Click
         Dim FileSaver As New SaveFileDialog
         With FileSaver
             .FileName = ""
@@ -203,6 +221,11 @@ Public Class Form1
     End Sub
 
     Private Sub Form1_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
+        If IsLocked = True Then
+            MessageBox.Show("Приложение нельзя закрыть, пока оно заблокировано.", "Извините!", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            e.Cancel = True
+            Exit Sub
+        End If
         If IsSaved = False Then
             Dim result As DialogResult = MessageBox.Show("Сохранить результаты в файл?", "TFEOffline", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question)
             If result = DialogResult.Cancel Then
@@ -258,5 +281,43 @@ Public Class Form1
         Dim logstring As String
         logstring = DateToStirng() & ", " & e
         LogLbl.Text = logstring
+    End Sub
+
+    Private Sub Lock()
+        IsLocked = True
+        OpenBtn.Visible = False
+        TicketsListBtn.Visible = False
+        SaveBtn.Visible = False
+        WriteLogBtn.Visible = False
+        LockBtn.Visible = False
+        EventTitleLbl.Visible = False
+        EventLocationLbl.Visible = False
+        NameSurnameLbl.Visible = False
+        TicketTypeLbl.Visible = False
+        LogLbl.Visible = False
+        TempStatus = StatusLbl.Text
+        StatusLbl.Text = "Разблокируйте..."
+        TicketIDTxt.UseSystemPasswordChar = True
+    End Sub
+
+    Private Sub Unlock()
+        IsLocked = False
+        OpenBtn.Visible = True
+        TicketsListBtn.Visible = True
+        SaveBtn.Visible = True
+        WriteLogBtn.Visible = True
+        LockBtn.Visible = True
+        EventTitleLbl.Visible = True
+        EventLocationLbl.Visible = True
+        NameSurnameLbl.Visible = True
+        TicketTypeLbl.Visible = True
+        LogLbl.Visible = True
+        StatusLbl.Text = TempStatus
+        TicketIDTxt.UseSystemPasswordChar = False
+    End Sub
+
+    Private Sub LockBtn_Click(sender As Object, e As EventArgs) Handles LockBtn.Click
+        Lock()
+        GenerateLog("Заблокировано")
     End Sub
 End Class

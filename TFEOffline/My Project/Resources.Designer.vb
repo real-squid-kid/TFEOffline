@@ -82,6 +82,15 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
         '''</summary>
+        Friend ReadOnly Property siren() As System.IO.UnmanagedMemoryStream
+            Get
+                Return ResourceManager.GetStream("siren", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        '''</summary>
         Friend ReadOnly Property turniket_new() As System.IO.UnmanagedMemoryStream
             Get
                 Return ResourceManager.GetStream("turniket_new", resourceCulture)

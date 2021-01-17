@@ -38,6 +38,7 @@ Partial Class Form1
         Me.CurrentTimeTimer = New System.Windows.Forms.Timer(Me.components)
         Me.WriteLogBtn = New System.Windows.Forms.Button()
         Me.LogLbl = New System.Windows.Forms.Label()
+        Me.LockBtn = New System.Windows.Forms.Button()
         Me.SuspendLayout()
         '
         'OpenBtn
@@ -181,6 +182,16 @@ Partial Class Form1
         Me.LogLbl.TabIndex = 5
         Me.LogLbl.Text = "Жду список"
         '
+        'LockBtn
+        '
+        Me.LockBtn.Location = New System.Drawing.Point(434, 10)
+        Me.LockBtn.Margin = New System.Windows.Forms.Padding(2)
+        Me.LockBtn.Name = "LockBtn"
+        Me.LockBtn.Size = New System.Drawing.Size(82, 29)
+        Me.LockBtn.TabIndex = 0
+        Me.LockBtn.Text = "🔒"
+        Me.LockBtn.UseVisualStyleBackColor = True
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -195,6 +206,7 @@ Partial Class Form1
         Me.Controls.Add(Me.TicketTypeLbl)
         Me.Controls.Add(Me.EventTitleLbl)
         Me.Controls.Add(Me.EntryStatusLbl)
+        Me.Controls.Add(Me.LockBtn)
         Me.Controls.Add(Me.WriteLogBtn)
         Me.Controls.Add(Me.SaveBtn)
         Me.Controls.Add(Me.TicketsListBtn)
@@ -224,4 +236,5 @@ Partial Class Form1
     Friend WithEvents CurrentTimeTimer As Timer
     Friend WithEvents WriteLogBtn As Button
     Friend WithEvents LogLbl As Label
+    Friend WithEvents LockBtn As Button
 End Class

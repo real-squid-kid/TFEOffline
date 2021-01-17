@@ -6,7 +6,8 @@ Public Class EntryForm
         'fill all the fields
         FirstNameLbl.Text = CurrentEntry.FirstName
         LastNameLbl.Text = CurrentEntry.LastName
-        TypeLbl.Text = "ID: " & CurrentEntry.ID
+        TypeLbl.Text = CurrentEntry.Type
+        IDLbl.Text = "ID: " & CurrentEntry.ID
         EmailLbl.Text = "Электронная почта: " & CurrentEntry.Email
         If CurrentEntry.Used = True Then
             Me.BackColor = Color.GreenYellow
